@@ -16,13 +16,17 @@ import android.widget.Toast;
 import com.example.diego.candyworld.adapter.MyAdapter;
 import com.example.diego.candyworld.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
     private ListView listView;
     private List<String> nombres;
+    private List<String> origen;
+    private List<String> bandera;
     private MyAdapter myAdapter;
+
     private int contador = 0;
     private int contar = 3;
 
@@ -33,26 +37,44 @@ public class ListActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-        nombres = new ArrayList<String>();
-        nombres.add("diego");
-        nombres.add("juan");
-        nombres.add("jorge");
-        nombres.add("matias");
+        bandera = getIntent().getStringArrayListExtra("bandera");
 
-        //forma visual que mostraremos los datos
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nombres);
-        //Enlazamos el adaptador con el listview
-        listView.setAdapter(adapter);
+        if (bandera == null) {
+            nombres = new ArrayList<String>();
+            nombres.add("diego");
+            nombres.add("juan");
+            nombres.add("jorge");
+            nombres.add("matias");
+
+
+            origen = new ArrayList<String>();
+            origen.add("listview");
+            origen.add("listview");
+            origen.add("listview");
+            origen.add("listview");
+
+
+            //forma visual que mostraremos los datos
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nombres);
+            //Enlazamos el adaptador con el listview
+            listView.setAdapter(adapter);
+        } else {
+            nombres = getIntent().getStringArrayListExtra("nombres");
+            origen = getIntent().getStringArrayListExtra("origen");
+            contador = (getIntent().getExtras().getInt("contador"));
+            contar = (getIntent().getExtras().getInt("contar"));
+        }
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(ListActivity.this, "clic en "+nombres.get(i), Toast.LENGTH_LONG).show();
+                Toast.makeText(ListActivity.this, "clic en " + nombres.get(i), Toast.LENGTH_LONG).show();
             }
         });
 
         //Enlazamos con nuestro adaptador personalizado
-        myAdapter = new MyAdapter(this, R.layout.list_item, nombres);
+        myAdapter = new MyAdapter(this, R.layout.list_item, nombres, origen);
         listView.setAdapter(myAdapter);
         registerForContextMenu(listView);
 
@@ -73,7 +95,9 @@ public class ListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.add_item:
                 //agregamos nuevo nombre
+
                 this.nombres.add("agregar nombre " + (++contador));
+                this.origen.add("listview" + (contador));
 
                 contar++;
                 //Notificamos al adaptador del cambio producido
@@ -82,6 +106,7 @@ public class ListActivity extends AppCompatActivity {
             case R.id.delete_item:
                 //Toast.makeText(GridActivity.this, "eliminar", Toast.LENGTH_LONG).show();
                 if (contar >= 0) {
+                    this.origen.remove(contar);
                     this.nombres.remove(contar--);
                     if (contador > 0)
                         contador--;
@@ -91,6 +116,10 @@ public class ListActivity extends AppCompatActivity {
 
             case R.id.switch_gridview:
                 Intent intent = new Intent(ListActivity.this, GridActivity.class);
+                intent.putStringArrayListExtra("nombres", (ArrayList<String>) nombres);
+                intent.putStringArrayListExtra("origen", (ArrayList<String>) origen);
+                intent.putExtra("contar", contar);
+                intent.putExtra("contador", contador);
                 startActivity(intent);
                 finish();
                 return true;

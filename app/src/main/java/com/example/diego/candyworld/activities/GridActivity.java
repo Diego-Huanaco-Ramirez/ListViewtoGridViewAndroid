@@ -20,24 +20,36 @@ import java.util.List;
 
 public class GridActivity extends AppCompatActivity {
     private List<String> nombres;
+    private List<String> origen;
+    private List<String> bandera;
     private GridView gridView;
     private MyAdapter myAdapter;
-    private int contador = 0;
-    private int contar = 3;
+
+    int contador;
+    int contar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
+        bandera = new ArrayList<String>();
+        bandera.add("diego");
+        bandera.add("juan");
+        bandera.add("jorge");
+        bandera.add("matias");
 
 
         gridView = (GridView) findViewById(R.id.gridView);
-        nombres = new ArrayList<String>();
-        nombres.add("diego");
-        nombres.add("juan");
-        nombres.add("jorge");
-        nombres.add("matias");
+        //nombres = new ArrayList<String>();
+
+        nombres = getIntent().getStringArrayListExtra("nombres");
+
+
+        //origen = new ArrayList<String>();
+        origen = getIntent().getStringArrayListExtra("origen");
+        contador = (getIntent().getExtras().getInt("contador"));
+        contar = (getIntent().getExtras().getInt("contar"));
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -47,7 +59,7 @@ public class GridActivity extends AppCompatActivity {
             }
         });
         //Enlazamos con nuestro adaptador personalizado
-        myAdapter = new MyAdapter(this, R.layout.grid_item, nombres);
+        myAdapter = new MyAdapter(this, R.layout.grid_item, nombres, origen);
         gridView.setAdapter(myAdapter);
         registerForContextMenu(gridView);
     }
@@ -67,22 +79,32 @@ public class GridActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.add_item:
                 //agregamos nuevo nombre
-                //this.nombres.add("agregar nombre " + (++contador));
-                //contar++;
+
+                this.nombres.add("agregar nombre " + (++contador));
+                this.origen.add("gridview" + (contador));
+
+                contar++;
                 //Notificamos al adaptador del cambio producido
-               // this.myAdapter.notifyDataSetChanged();
+                this.myAdapter.notifyDataSetChanged();
                 return true;
             case R.id.delete_item:
                 //Toast.makeText(GridActivity.this, "eliminar", Toast.LENGTH_LONG).show();
                 if (contar >= 0) {
+                    this.origen.remove(contar);
                     this.nombres.remove(contar--);
                     if (contador > 0)
                         contador--;
                 }
                 this.myAdapter.notifyDataSetChanged();
                 return true;
+
             case R.id.switch_listview:
                 Intent intent = new Intent(GridActivity.this, ListActivity.class);
+                intent.putStringArrayListExtra("nombres", (ArrayList<String>) nombres);
+                intent.putStringArrayListExtra("bandera", (ArrayList<String>) bandera);
+                intent.putStringArrayListExtra("origen", (ArrayList<String>) origen);
+                intent.putExtra("contar", contar);
+                intent.putExtra("contador", contador);
                 startActivity(intent);
                 finish();
                 return true;

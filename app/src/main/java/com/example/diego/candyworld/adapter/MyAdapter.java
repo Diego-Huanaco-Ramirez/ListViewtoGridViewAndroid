@@ -9,18 +9,37 @@ import android.widget.TextView;
 
 import com.example.diego.candyworld.R;
 
+import java.io.Serializable;
 import java.util.List;
-
-public class MyAdapter extends BaseAdapter {
+public class MyAdapter extends BaseAdapter  {
     private Context context;
     private int layout;
     private List<String> nombres;
+    private List<String> origen;
 
-    public MyAdapter(Context context, int layout, List<String> nombres){
+    public MyAdapter(Context context, int layout, List<String> nombres,List<String> origen){
         this.context = context;
         this.layout = layout;
         this.nombres = nombres;
+        this.origen = origen;
     }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void setLayout(int layout) {
+        this.layout = layout;
+    }
+
+    public void setNombres(List<String> nombres) {
+        this.nombres = nombres;
+    }
+
+    public void setOrigen(List<String> origen) {
+        this.origen = origen;
+    }
+
     @Override
     public int getCount() {
         return this.nombres.size();
@@ -32,6 +51,22 @@ public class MyAdapter extends BaseAdapter {
     @Override
     public long getItemId(int id) {
         return id;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public int getLayout() {
+        return layout;
+    }
+
+    public List<String> getNombres() {
+        return nombres;
+    }
+
+    public List<String> getOrigen() {
+        return origen;
     }
 
     @Override
@@ -47,20 +82,24 @@ public class MyAdapter extends BaseAdapter {
 
             //Referencias el elemento a modificar y lo rellenamos
             holder.nametextView = (TextView) convertView.findViewById(R.id.textView_nombre);
+            holder.origintextView = (TextView) convertView.findViewById(R.id.textView_origen);
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
         //Nos traemos el valor actual dependiente de la posición
         String nombreActual = nombres.get(position);
+        String origenActual = origen.get(position);
 
         //Referencias el elemento a modificar y lo rellenamos
-        holder.nametextView.setText(nombreActual);
 
+        holder.nametextView.setText(nombreActual);
+        holder.origintextView.setText(origenActual);
         return convertView;
     }
 
     static class ViewHolder {
         public TextView nametextView;
+        public TextView origintextView;
     }
 }
